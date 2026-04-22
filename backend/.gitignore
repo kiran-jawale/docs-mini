@@ -1,0 +1,18 @@
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+
+# User Uploads (We don't want to commit actual user files)
+public/uploads/*
+!public/uploads/.gitkeep
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
