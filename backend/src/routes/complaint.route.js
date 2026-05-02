@@ -9,13 +9,14 @@ import {
 import { isVerified } from "../middlewares/auth.middleware.js";
 import { isAdminOrMod } from "../middlewares/role.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
+import { uploadLimiter } from "../middlewares/rateLimiter.middleware.js";
 
 const router = Router();
 
 router.use(isVerified);
 
 // User Routes
-router.post("/", upload.array("images", 3), createComplaint);
+router.post("/", uploadLimiter, upload.array("images", 3), createComplaint);
 router.get("/my", getMyComplaints);
 
 // Staff Routes (Admin or Mod)

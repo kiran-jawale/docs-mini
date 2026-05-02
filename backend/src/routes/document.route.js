@@ -9,12 +9,11 @@ import {
 } from "../controllers/document.controller.js";
 import { isVerified } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
+import { uploadLimiter } from "../middlewares/rateLimiter.middleware.js";
 
 const router = Router();
 
-router.use(isVerified);
-
-router.post("/", upload.single("documentFile"), uploadDocument);
+router.post("/", uploadLimiter, upload.single("documentFile"), uploadDocument);
 router.get("/my", getMyDocuments);
 router.get("/public", getPublicDocuments);
 router.put("/:id", updateDocument);

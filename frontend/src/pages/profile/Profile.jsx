@@ -1,88 +1,76 @@
-import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import Container from "../../components/Container";
-import authService from "../../services/auth.service";
-import { updateUser } from "../../redux/slices/authSlice";
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { getRegionLabel } from '../../constants/content.js';
 
 const Profile = () => {
-  const user = useSelector((state) => state.auth.user);
-  const dispatch = useDispatch();
-  
-  const [formData, setFormData] = useState({ 
-    fullname: user?.fullname || "", 
-    contact: user?.contact || "", 
-    address: user?.address || "",
-    areacode: user?.areacode || "" 
-  });
-  const [loading, setLoading] = useState(false);
+  const { user, type } = useSelector((state) => state.auth);
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const res = await authService.updateProfile(formData);
-      dispatch(updateUser(res.data.data));
-      alert("Profile Updated Successfully");
-    } catch (error) { 
-      alert("Failed to update profile"); 
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!user) return (
+    <div className="h-[60vh] flex items-center justify-center font-black text-xs uppercase tracking-widest text-zinc-400">
+      Account data not found
+    </div>
+  );
 
-  if (!user) return null;
+  const isEmployee = type === 'employee';
 
   return (
-    <Container>
-      <h1 className="text-3xl font-bold mb-8">My Profile</h1>
-      <div className="grid md:grid-cols-3 gap-8">
-        {/* User Card */}
-        <div className="col-span-1 bg-green-50 dark:bg-zinc-800 p-6 rounded-2xl h-fit shadow-md border border-green-100 dark:border-zinc-700">
-          <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center text-4xl text-white font-bold mb-4 mx-auto">
-            {user.fullname?.charAt(0)}
+    <div className="flex flex-col items-center justify-center min-h-[70vh] p-4">
+      <div className="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl border border-zinc-100 dark:border-zinc-800 overflow-hidden">
+        
+        <div className="p-10 flex flex-col items-center bg-zinc-50 dark:bg-zinc-800/30 border-b dark:border-zinc-800">
+          <div className="w-24 h-24 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-3xl flex items-center justify-center text-4xl font-black mb-6 shadow-xl shadow-zinc-900/10 transition-transform hover:scale-105">
+            {user.fullname.charAt(0)}
           </div>
-          <div className="text-center">
-            <h2 className="text-xl font-bold">{user.fullname}</h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">{user.email}</p>
-            <div className="mt-4 inline-block px-3 py-1 bg-zinc-200 dark:bg-zinc-700 rounded text-xs uppercase font-bold tracking-wider">
-              {user.role}
-            </div>
-            <div className={`mt-2 text-xs font-semibold uppercase ${user.status === 'active' ? 'text-green-500' : 'text-red-500'}`}>
-              Status: {user.status}
-            </div>
-          </div>
+          <h1 className="text-2xl font-black dark:text-white uppercase tracking-tight text-center leading-none">
+            {user.fullname}
+          </h1>
+          <p className="text-[10px] font-bold text-zinc-400 mt-4 tracking-widest uppercase bg-zinc-200/50 dark:bg-zinc-700/50 px-3 py-1 rounded-full">
+            {type} Account
+          </p>
         </div>
 
-        {/* Edit Form */}
-        <form onSubmit={handleUpdate} className="col-span-2 space-y-5 max-w-lg">
-          <h3 className="text-xl font-semibold mb-2">Edit Details</h3>
-          
-          <div>
-            <label className="text-xs font-bold text-gray-500 uppercase">Full Name</label>
-            <input className="input-field" value={formData.fullname} onChange={(e) => setFormData({...formData, fullname: e.target.value})} />
-          </div>
-          
-          <div>
-            <label className="text-xs font-bold text-gray-500 uppercase">Contact Number</label>
-            <input className="input-field" value={formData.contact} onChange={(e) => setFormData({...formData, contact: e.target.value})} />
-          </div>
-          
-          <div>
-            <label className="text-xs font-bold text-gray-500 uppercase">Address</label>
-            <input className="input-field" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} />
-          </div>
-          
-          <div>
-            <label className="text-xs font-bold text-gray-500 uppercase">Area Code</label>
-            <input className="input-field" value={formData.areacode} onChange={(e) => setFormData({...formData, areacode: e.target.value})} />
+        <div className="p-8 space-y-6">
+          <div className="flex justify-between items-center">
+            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Email Address</span>
+            <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">
+              {user.email}
+            </span>
           </div>
 
-          <button disabled={loading} className="btn-primary w-fit px-8 mt-4">
-            {loading ? "Saving..." : "Save Changes"}
-          </button>
-        </form>
+          <div className="flex justify-between items-center">
+            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Fast-Login ID</span>
+            <span className="text-xs font-mono font-bold px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md dark:text-zinc-200">
+              {user.userID || "NOT SET"}
+            </span>
+          </div>
+
+          {!isEmployee ? (
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Region</span>
+              <span className="text-xs font-bold dark:text-zinc-200 italic">
+                {getRegionLabel(user.areacode)}
+              </span>
+            </div>
+          ) : (
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Employee Code</span>
+              <span className="text-xs font-mono font-bold dark:text-zinc-200">
+                {user.empCode}
+              </span>
+            </div>
+          )}
+
+          <div className="flex justify-between items-center pt-5 border-t dark:border-zinc-800">
+            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">System Status</span>
+            <span className={`text-[10px] font-black uppercase ${
+              user.status === 'active' ? 'text-green-500' : 'text-red-500'
+            }`}>
+              ● {user.status}
+            </span>
+          </div>
+        </div>
       </div>
-    </Container>
+    </div>
   );
 };
 

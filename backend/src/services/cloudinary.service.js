@@ -1,6 +1,7 @@
 import fs from "fs";
 import { v2 as cloudinary } from "cloudinary";
 import dotenv from "dotenv";
+import { SYSTEM_ERRORS } from "../constants/systemErros.js"; 
 dotenv.config();
 
 cloudinary.config({
@@ -14,19 +15,30 @@ class CloudinaryService {
     try {
       if (!localFilePath) return null;
       
+      // We force 'auto' but ensure Cloudinary knows it might be a raw document
       const response = await cloudinary.uploader.upload(localFilePath, {
-        resource_type: "auto",
+        resource_type: "auto", 
         folder: folderName,
       });
       
-      fs.unlinkSync(localFilePath);
-      return response;
-    } catch (error) {
-      console.error("Cloudinary Upload Error:", error);
+      // Clean up local temp file on success
       if (fs.existsSync(localFilePath)) {
         fs.unlinkSync(localFilePath);
       }
-      return null;
+      
+      return response;
+    } catch (error) {
+      // LOG THE ACTUAL ERROR TO TERMINAL FOR DEBUGGING
+      console.error(`🔴 CLOUDINARY UPLOAD FAILED:`, error.message || error);
+      
+      // V3 FIX: Silent backend log for system health checks
+      console.log(`[SYSTEM ALERT] ${SYSTEM_ERRORS.CLOUD_UPLOAD_ERR}`);
+      
+      // Clean up local temp file on failure so server storage doesn't fill up
+      if (fs.existsSync(localFilePath)) {
+        fs.unlinkSync(localFilePath);
+      }
+      return null; 
     }
   }
 
@@ -38,7 +50,8 @@ class CloudinaryService {
       });
       return response;
     } catch (error) {
-      console.error("Cloudinary Delete Error:", error);
+      console.error(`🔴 CLOUDINARY DELETE FAILED:`, error.message || error);
+      console.log(`[SYSTEM ALERT] Cloudinary Delete Failed for ${publicId}`);
       return null;
     }
   }

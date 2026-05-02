@@ -1,48 +1,53 @@
 import React from "react";
-import { DOCUMENT_PREVIEW_URL } from "../constants/api";
 import documentService from "../services/document.service";
 
 const DocumentViewer = ({ document }) => {
-  if (!document) return null;
+  if (!document || Object.keys(document).length === 0) return null;
 
-  const docUrl = `${DOCUMENT_PREVIEW_URL}/${document.filePath}`;
+  const docUrl = document?.cloudUrl || "";
+  const fileType = document?.fileType || "";
 
-  // Check if the browser can natively render this inside an iframe
   const isPreviewable = [
     'application/pdf',
     'text/plain',
     'image/jpeg',
     'image/png',
+    'image/jpg',
     'image/gif'
-  ].includes(document.fileType);
+  ].includes(fileType);
 
   const handleDownload = () => {
-    window.open(documentService.getDownloadUrl(document._id), '_blank');
+    if (document?._id) {
+      window.open(documentService.getDownloadUrl(document._id), '_blank');
+    }
   };
 
   return (
     <div className="h-[75vh] w-full flex flex-col bg-zinc-100 dark:bg-zinc-900 rounded-lg overflow-hidden relative">
       
-      {/* Viewer Header */}
       <div className="flex-none p-4 bg-white dark:bg-zinc-800 border-b border-gray-200 dark:border-zinc-700 flex justify-between items-center">
         <div>
-          <h3 className="font-bold text-gray-800 dark:text-white truncate max-w-md">{document.title}</h3>
-          <p className="text-xs text-gray-500 uppercase">{document.fileType.split('/')[1] || 'Document'}</p>
+          <h3 className="font-bold text-gray-800 dark:text-white truncate max-w-md">
+            {document?.title || "Untitled Document"}
+          </h3>
+          <p className="text-xs text-gray-500 uppercase">
+            {fileType ? fileType.split('/')[1] : 'Document'}
+          </p>
         </div>
         <button 
           onClick={handleDownload}
-          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded shadow transition"
+          disabled={!document?._id}
+          className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-sm font-semibold rounded shadow transition"
         >
           Download File
         </button>
       </div>
 
-      {/* Viewer Body */}
       <div className="flex-grow relative">
-        {isPreviewable ? (
+        {isPreviewable && docUrl ? (
           <iframe 
             src={docUrl} 
-            title={document.title}
+            title={document?.title || "Document Viewer"}
             className="w-full h-full border-0 bg-white"
           />
         ) : (
@@ -52,12 +57,13 @@ const DocumentViewer = ({ document }) => {
               Preview Not Available
             </h2>
             <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
-              This file format (Word/Excel/PowerPoint) requires a desktop application or cloud service to render. 
+              This file format requires a desktop application or cloud service to render. 
               Please download the file to view its contents securely on your local machine.
             </p>
             <button 
               onClick={handleDownload}
-              className="px-6 py-3 border-2 border-green-600 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg font-bold transition"
+              disabled={!document?._id}
+              className="px-6 py-3 border-2 border-green-600 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg font-bold transition disabled:opacity-50"
             >
               Download to View
             </button>

@@ -1,26 +1,27 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-  status: false, // isLoggedIn
-  user: null, // User object
-};
-
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+  initialState: {
+    user: null,
+    type: null,    // 'user' or 'employee'
+    status: false, // Matches your AuthLayout.jsx check
+  },
   reducers: {
     login: (state, action) => {
+      // action.payload should be { user: {...}, type: "..." }
+      state.user = action.payload.user;
+      state.type = action.payload.type;
       state.status = true;
-      state.user = action.payload;
     },
     logout: (state) => {
-      state.status = false;
       state.user = null;
+      state.type = null;
+      state.status = false;
     },
     updateUser: (state, action) => {
-      // For updating profile details without re-login
       state.user = { ...state.user, ...action.payload };
-    },
+    }
   },
 });
 

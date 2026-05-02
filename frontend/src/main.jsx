@@ -26,6 +26,7 @@ import About from "./pages/about/About.jsx";
 import Contact from "./pages/contact/Contact.jsx";
 import Terms from "./pages/terms/Terms.jsx";
 import Privacy from "./pages/privacy/Privacy.jsx";
+import Analytics from './pages/analytics/Analytics.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -47,6 +48,7 @@ const router = createBrowserRouter(
         <Route path="docs" element={<Docs />} />
         <Route path="profile" element={<Profile />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="/analytics" element={<Analytics />} />
       </Route>
     </Route>
   )

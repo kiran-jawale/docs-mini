@@ -10,3 +10,14 @@ export const content = {
     { title: "Terms & Conditions", path: "/terms-and-conditions" },
   ],
 };
+
+export const areaOptions = [
+  { code: "AREA001", address: "Central District" },
+  { code: "AREA002", address: "North Sector" },
+  { code: "AREA003", address: "South Sector" },
+  { code: "AREA004", address: "West Zone" },
+  { code: "AREA005", address: "East Zone" },
+];
+
+// Helper to get Label from Code
+export const getRegionLabel = (code) => areaOptions[code] || "Unassigned Zone";

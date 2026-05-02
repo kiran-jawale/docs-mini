@@ -1,5 +1,6 @@
 import { Complaint } from "../models/complaint.model.js";
 import { ApiError } from "../utils/ApiError.js";
+import { UX_ERRORS } from "../constants/uxErrors.js";
 import cloudinaryService from "./cloudinary.service.js";
 
 class ComplaintService {
@@ -42,13 +43,13 @@ class ComplaintService {
       { new: true }
     );
 
-    if (!complaint) throw new ApiError(404, "Complaint not found");
+    if (!complaint) throw new ApiError(404, UX_ERRORS.COMPLAINT.NOT_FOUND);
     return complaint;
   }
 
   async deleteComplaint(id) {
     const complaint = await Complaint.findById(id);
-    if (!complaint) throw new ApiError(404, "Complaint not found");
+    if (!complaint) throw new ApiError(404, UX_ERRORS.COMPLAINT.NOT_FOUND);
 
     for (const img of complaint.images) {
       await cloudinaryService.delete(img.publicId, "image");

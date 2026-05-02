@@ -5,11 +5,12 @@ import {
   getComplaintAnalytics 
 } from "../controllers/analytics.controller.js";
 import { isVerified } from "../middlewares/auth.middleware.js";
-import { isAdmin } from "../middlewares/role.middleware.js";
+import { isAdminOrHR } from "../middlewares/role.middleware.js";
 
 const router = Router();
 
-router.use(isVerified, isAdmin);
+// CRITICAL: isVerified must come first to populate req.user
+router.use(isVerified, isAdminOrHR);
 
 router.get("/users", getUserAnalytics);
 router.get("/docs", getDocAnalytics);

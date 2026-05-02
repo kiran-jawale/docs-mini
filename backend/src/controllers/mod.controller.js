@@ -1,59 +1,40 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { User } from "../models/user.model.js";
+import adminService from "../services/admin.service.js";
+import documentService from "../services/document.service.js";
 import { Document } from "../models/document.model.js";
+import { UX_ERRORS } from "../constants/uxErrors.js";
 
-const modGetAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find().select("-password");
+export const modGetAllUsers = asyncHandler(async (req, res) => {
+  const users = await adminService.getAllAccounts("user", req.query);
   return res.status(200).json(new ApiResponse(200, users, "Users fetched"));
 });
 
-const modGetUserById = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id).select("-password");
-  if (!user) throw new ApiError(404, "User not found");
-  return res.status(200).json(new ApiResponse(200, user, "User details"));
+export const modGetUserById = asyncHandler(async (req, res) => {
+  const user = await adminService.getAccountById(req.params.id, "user");
+  return res.status(200).json(new ApiResponse(200, user, "User details fetched"));
 });
 
-const updateUserStatus = asyncHandler(async (req, res) => {
+export const updateUserStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
-  const userId = req.params.id;
+  if (!status) throw new ApiError(400, UX_ERRORS.VALIDATION.MISSING_FIELDS);
 
-  const targetUser = await User.findById(userId);
-  if (!targetUser) throw new ApiError(404, "User not found");
-
-  // Rule: Mods cannot modify Admins
-  if (targetUser.role === "admin") {
-    throw new ApiError(403, "Moderators cannot modify Administrators");
-  }
-
-  targetUser.status = status;
-  await targetUser.save({ validateBeforeSave: false });
-
-  return res.status(200).json(new ApiResponse(200, targetUser, "User status updated"));
+  const updatedUser = await adminService.updateAccountStatus(req.params.id, "user", status, req.user.role, req.user._id);
+  return res.status(200).json(new ApiResponse(200, updatedUser, "User status updated"));
 });
 
-const modGetAllPublicDocuments = asyncHandler(async (req, res) => {
-  const docs = await Document.find({ isPublic: true }).populate("owner", "fullname email");
+export const modGetAllPublicDocuments = asyncHandler(async (req, res) => {
+  const docs = await documentService.getPublicDocuments();
   return res.status(200).json(new ApiResponse(200, docs, "Public documents fetched"));
 });
 
-// Mods can toggle visibility but NOT delete documents (per prompt)
-const toggleDocumentVisibility = asyncHandler(async (req, res) => {
-  const document = await Document.findById(req.params.id);
-  if (!document) throw new ApiError(404, "Document not found");
-
-  // Mods manage public docs.
-  document.isPublic = !document.isPublic;
-  await document.save();
-
-  return res.status(200).json(new ApiResponse(200, document, "Visibility toggled"));
+// src/controllers/mod.controller.js
+export const toggleDocumentVisibility = asyncHandler(async (req, res) => {
+  // Logic moved to service to ensure consistent permission checks
+  const document = await documentService.toggleVisibility(req.params.id, req.user);
+  
+  return res.status(200).json(
+    new ApiResponse(200, document, `Document visibility updated.`)
+  );
 });
-
-export {
-  modGetAllUsers,
-  modGetUserById,
-  updateUserStatus,
-  modGetAllPublicDocuments,
-  toggleDocumentVisibility
-};

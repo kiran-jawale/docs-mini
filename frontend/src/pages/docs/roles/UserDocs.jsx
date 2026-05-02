@@ -1,29 +1,32 @@
 import React, { useEffect } from 'react';
 import documentService from '../../../services/document.service';
+import { useSelector } from 'react-redux'; // For the owner check
 import { useDom } from '../../../contexts/DomContext';
 import Background from '../parts/Background';
 import Foreground from '../parts/Foreground';
 
 const UserDocs = () => {
-  const { setDocs } = useDom();
+  const { setDocs, addToast } = useDom();
 
-  useEffect(() => {
-    const fetchDocs = async () => {
-      try {
-        const res = await documentService.getMyDocuments();
-        setDocs(res.data.data);
-      } catch (error) {
-        console.error("Failed to fetch docs", error);
-      }
-    };
-    fetchDocs();
-  }, [setDocs]);
+  // Inside UserDocs.jsx useEffect
+useEffect(() => {
+  const fetchDocs = async () => {
+    try {
+      // This now hits the updated controller which returns Owner + Public docs
+      const res = await documentService.getMyDocuments(); 
+      setDocs(res.data.data);
+    } catch (error) {
+      addToast(getErrorMessage(error), "error");
+    }
+  };
+  fetchDocs();
+}, [setDocs]);
 
-  // Removed 'overflow-hidden h-[calc...]', allowing natural scrolling
   return (
-    <div className="relative w-full min-h-[calc(100vh-140px)] bg-zinc-800">
+    <div className="relative w-full min-h-[calc(100vh-140px)] bg-zinc-800 overflow-hidden">
       <Background />
-      <Foreground />
+      {/* Foreground renders the draggable DocumentCards */}
+      <Foreground /> 
     </div>
   );
 };

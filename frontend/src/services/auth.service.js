@@ -14,7 +14,15 @@ class AuthService {
     return api.get("/auth/me");
   }
   updateProfile(data) {
-    return api.put("/auth/update-profile", data);
+    return api.patch("/auth/update-profile", data);
+  }
+  // NEW: Update Email Method
+  updateEmail(data) {
+    return api.patch("/auth/update-email", data);
+  }
+  // NEW: Update Fast-Login ID Method
+  updateUserID(data) {
+    return api.patch("/auth/update-userid", data);
   }
   changePassword(data) {
     return api.post("/auth/change-password", data);

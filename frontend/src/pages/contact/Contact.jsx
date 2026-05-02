@@ -1,124 +1,67 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import Container from "../../components/Container";
-import complaintService from "../../services/complaint.service";
+import { ThemeContext } from "../../contexts/ThemeContext";
+import ComplaintForm from "./parts/ComplaintForm";
 
 const Contact = () => {
-  const [view, setView] = useState("contact"); // 'contact' or 'complaint'
-  
-  // Complaint Form State
-  const [complaintData, setComplaintData] = useState({ subject: '', description: '' });
-  const [files, setFiles] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const handleComplaintSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const data = new FormData();
-    data.append('subject', complaintData.subject);
-    data.append('description', complaintData.description);
-    for (let i = 0; i < files.length; i++) data.append('images', files[i]);
-
-    try {
-      await complaintService.createComplaint(data);
-      alert("Ticket raised successfully! We will review it shortly.");
-      setComplaintData({ subject: '', description: '' });
-      setFiles([]);
-    } catch (error) { alert("Failed to raise ticket"); }
-    finally { setLoading(false); }
-  };
+  const { theme } = useContext(ThemeContext);
+  const { status } = useSelector((state) => state.auth);
 
   return (
     <Container>
-      <div className="max-w-6xl mx-auto py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-black mb-4 tracking-tight dark:text-white">How can we help?</h1>
-          <p className="text-xl text-gray-500 max-w-2xl mx-auto">
-            Whether you have a general inquiry, feedback, or need to raise a technical support ticket, our team in Pune is ready to assist.
+      <div className="max-w-6xl mx-auto py-16 px-6">
+        <div className="text-center mb-16">
+          <h1 className="text-5xl font-black tracking-tighter dark:text-white mb-4">
+            Get in Touch
+          </h1>
+          <p className="text-zinc-500 font-medium max-w-xl mx-auto">
+            Have a question about your documents or need technical support? 
+            Our regional offices are here to help 24/7.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-5 gap-8">
-          {/* Left Column: Contact Info */}
-          <div className="md:col-span-2 space-y-6">
-            <div className="p-8 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 text-white shadow-xl">
-              <h3 className="text-2xl font-bold mb-6">Our Headquarters</h3>
-              <div className="space-y-4">
-                <p className="flex items-start gap-4">
-                  <span className="text-2xl">📍</span> 
-                  <span className="leading-relaxed text-gray-300">
-                    Docs Mini Tech Park,<br />
-                    Kharadi IT Park Phase 2,<br />
-                    Pune, Maharashtra 411014,<br />
-                    India
-                  </span>
-                </p>
-                <p className="flex items-center gap-4 text-gray-300">
-                  <span className="text-xl">✉️</span> support@docsmini.in
-                </p>
-                <p className="flex items-center gap-4 text-gray-300">
-                  <span className="text-xl">📞</span> +91 98765 43210
-                </p>
-              </div>
-            </div>
-            
-            {/* Toggle Buttons */}
-            <div className="flex gap-4">
-              <button 
-                onClick={() => setView("contact")} 
-                className={`flex-1 py-4 rounded-xl font-bold transition ${view === 'contact' ? 'bg-green-600 text-white shadow-lg' : 'bg-gray-100 dark:bg-zinc-800 text-gray-500'}`}
-              >
-                General Feedback
-              </button>
-              <button 
-                onClick={() => setView("complaint")} 
-                className={`flex-1 py-4 rounded-xl font-bold transition ${view === 'complaint' ? 'bg-red-600 text-white shadow-lg' : 'bg-gray-100 dark:bg-zinc-800 text-gray-500'}`}
-              >
-                Raise Ticket
-              </button>
-            </div>
+        <div className="grid lg:grid-cols-3 gap-12">
+          {/* Info Section */}
+          <div className="space-y-8">
+            <ContactCard 
+              icon="📍" 
+              title="Headquarters" 
+              detail="Chhatrapati Sambhajinagar, MH, India" 
+            />
+            <ContactCard 
+              icon="📧" 
+              title="Email Support" 
+              detail="support@docsmini.com" 
+            />
+            <ContactCard 
+              icon="📞" 
+              title="Phone" 
+              detail="+91 1234567890" 
+            />
           </div>
 
-          {/* Right Column: Forms */}
-          <div className="md:col-span-3 bg-white dark:bg-zinc-800 p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-zinc-700">
-            {view === "contact" ? (
-              <div>
-                <h3 className="text-2xl font-bold mb-6 dark:text-white">Send us a Message</h3>
-                <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert("Thanks for your feedback!"); }}>
-                  <div className="grid grid-cols-2 gap-4">
-                    <input placeholder="Your Name" className="input-field" required />
-                    <input placeholder="Email Address" type="email" className="input-field" required />
-                  </div>
-                  <input placeholder="Subject" className="input-field" required />
-                  <textarea placeholder="Write your message or review here..." className="input-field min-h-[150px]" required />
-                  <button type="submit" className="btn-primary w-full py-4 text-lg">Send Message</button>
-                </form>
+          {/* Form Section (Conditional) */}
+          <div className="lg:col-span-2">
+            {status ? (
+              <div className="bg-white dark:bg-zinc-800 p-8 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-zinc-700">
+                <div className="mb-6">
+                    <h2 className="text-2xl font-black dark:text-white">Raise a Ticket</h2>
+                    <p className="text-xs text-green-600 font-bold uppercase tracking-widest mt-1">Direct Support Line</p>
+                </div>
+                <ComplaintForm />
               </div>
             ) : (
-              <div>
-                <h3 className="text-2xl font-bold mb-2 dark:text-white flex items-center gap-2">
-                  <span className="text-red-500">🛠️</span> IT / Support Ticket
-                </h3>
-                <p className="text-sm text-gray-500 mb-6">Log an official complaint or issue. Our moderators will assign a priority and resolve it.</p>
-                
-                <form onSubmit={handleComplaintSubmit} className="space-y-4">
-                  <input 
-                    placeholder="Issue Subject (e.g. Cannot access file)" className="input-field" required
-                    value={complaintData.subject} onChange={(e) => setComplaintData({...complaintData, subject: e.target.value})} 
-                  />
-                  <textarea 
-                    placeholder="Provide detailed steps or description of the issue..." className="input-field min-h-[150px]" required
-                    value={complaintData.description} onChange={(e) => setComplaintData({...complaintData, description: e.target.value})} 
-                  />
-                  
-                  <div className="p-4 border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-xl">
-                    <label className="block text-sm font-bold text-gray-600 dark:text-gray-300 mb-2">Attach Screenshots (Optional, Max 3)</label>
-                    <input type="file" multiple accept="image/*" onChange={(e) => setFiles(e.target.files)} className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" />
-                  </div>
-                  
-                  <button type="submit" disabled={loading} className="w-full py-4 rounded-xl shadow-lg text-lg font-bold text-white bg-red-600 hover:bg-red-700 transition">
-                    {loading ? "Submitting..." : "Submit Formal Ticket"}
-                  </button>
-                </form>
+              <div className="h-full flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-800/40 p-12 rounded-[2.5rem] border-2 border-dashed border-zinc-200 dark:border-zinc-700 text-center">
+                <span className="text-5xl mb-6">🔒</span>
+                <h3 className="text-xl font-bold dark:text-white mb-2">Secure Support Portal</h3>
+                <p className="text-zinc-500 text-sm mb-8 max-w-xs">
+                  To protect your data and verify your identity, support tickets can only be raised by registered members.
+                </p>
+                <Link to="/auth" className="btn-primary px-10 py-3 rounded-2xl text-xs font-black tracking-widest uppercase">
+                  Sign In to Contact Us
+                </Link>
               </div>
             )}
           </div>
@@ -127,5 +70,13 @@ const Contact = () => {
     </Container>
   );
 };
+
+const ContactCard = ({ icon, title, detail }) => (
+  <div className="p-6 bg-white dark:bg-zinc-800 rounded-3xl border border-gray-100 dark:border-zinc-700 shadow-sm hover:shadow-md transition-shadow">
+    <span className="text-3xl mb-4 block">{icon}</span>
+    <h4 className="text-[10px] font-black uppercase text-zinc-400 tracking-widest mb-1">{title}</h4>
+    <p className="font-bold dark:text-white text-sm">{detail}</p>
+  </div>
+);
 
 export default Contact;
