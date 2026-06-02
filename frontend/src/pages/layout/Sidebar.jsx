@@ -70,7 +70,7 @@ const Sidebar = ({ user }) => {
               </>
             )}
 
-            {/* ADMIN AND HR SEE STAFF */}
+          
             {(user.role === "admin" || user.role === "hr") && (
               <Link
                 to="/docs#employees"
@@ -117,8 +117,7 @@ const Sidebar = ({ user }) => {
                     </Link>
                   </>
                 )}
-                {/* HR only sees Finance here */}
-                <Link
+                 <Link
                   to="/analytics#finance"
                   className={`${currentHash === "#finance" || (user.role === "hr" && currentHash === "") ? activeSubLink : inactiveSubLink} block py-1.5 text-sm`}
                 >

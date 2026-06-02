@@ -27,10 +27,9 @@ const Register = ({ onToggleView }) => {
     try {
       await authService.register(formData);
       addToast("Identity Created", "success");
-      // Switch to login view; no navigation needed here
+
       onToggleView();
     } catch (err) {
-      // API interceptor handles the toast
     } finally {
       setLoading(false);
     }

@@ -21,9 +21,8 @@ export const FE_ERRORS = {
   },
 };
 export const getErrorMessage = (error) => {
-  // 1. Check for Network/Server Reachability
   if (!error.response) {
-    // If the browser says we are actually offline
+    // if we're actually offline
     if (!window.navigator.onLine) {
       return FE_ERRORS.NETWORK.OFFLINE;
     }
@@ -33,12 +32,11 @@ export const getErrorMessage = (error) => {
   const status = error.response.status;
   const backendMessage = error.response.data?.message;
 
-  // 2. Prioritize Backend UX_ERROR
+  // prioritize Backend UX_ERROR
   if (backendMessage) {
     return backendMessage;
   }
 
-  // 3. Fallback to Frontend Constants
   if (status === 401) return FE_ERRORS.AUTH.UNAUTHORIZED;
   if (status === 403) return FE_ERRORS.AUTH.FORBIDDEN;
   if (status >= 500) return FE_ERRORS.NETWORK.SERVER_ERROR;

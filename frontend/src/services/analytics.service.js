@@ -1,10 +1,9 @@
 import api from "../constants/api";
 
 class AnalyticsService {
-  // Helper to convert object to query string safely
   buildQuery(filters) {
     const params = new URLSearchParams();
-    Object.keys(filters).forEach(key => {
+    Object.keys(filters).forEach((key) => {
       if (filters[key]) params.append(key, filters[key]);
     });
     return params.toString();
@@ -13,7 +12,7 @@ class AnalyticsService {
   getUserAnalytics(filters = {}) {
     return api.get(`/analytics/users?${this.buildQuery(filters)}`);
   }
-  
+
   getDocAnalytics(filters = {}) {
     return api.get(`/analytics/docs?${this.buildQuery(filters)}`);
   }

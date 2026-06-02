@@ -9,7 +9,6 @@ const TransactionForm = ({ onClose, refresh }) => {
   const [formData, setFormData] = useState({ amount: '', type: 'Income', description: '', recipientEmployee: '' });
 
   useEffect(() => {
-    // If Admin selects Payroll, we need a list of employees to assign the payment to
     const fetchEmps = async () => {
       try {
         const res = await adminService.getAllEmployees();

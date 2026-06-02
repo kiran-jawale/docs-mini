@@ -1,27 +1,27 @@
-import { Router } from "express";
-import { 
-  createComplaint, 
-  getMyComplaints, 
-  getAllComplaints, 
-  updateComplaintStatus, 
-  deleteComplaint 
-} from "../controllers/complaint.controller.js";
-import { isVerified } from "../middlewares/auth.middleware.js";
-import { isAdminOrMod } from "../middlewares/role.middleware.js";
-import { upload } from "../middlewares/multer.middleware.js";
-import { uploadLimiter } from "../middlewares/rateLimiter.middleware.js";
+import { Router } from 'express';
+import {
+  createComplaint,
+  getMyComplaints,
+  getAllComplaints,
+  updateComplaintStatus,
+  deleteComplaint,
+} from '../controllers/complaint.controller.js';
+import { isVerified } from '../middlewares/auth.middleware.js';
+import { isAdminOrMod } from '../middlewares/role.middleware.js';
+import { upload } from '../middlewares/multer.middleware.js';
+import { uploadLimiter } from '../middlewares/rateLimiter.middleware.js';
 
 const router = Router();
 
 router.use(isVerified);
 
-// User Routes
-router.post("/", uploadLimiter, upload.array("images", 3), createComplaint);
-router.get("/my", getMyComplaints);
+// User
+router.post('/', uploadLimiter, upload.array('images', 3), createComplaint);
+router.get('/my', getMyComplaints);
 
-// Staff Routes (Admin or Mod)
-router.get("/all", isAdminOrMod, getAllComplaints);
-router.put("/:id/status", isAdminOrMod, updateComplaintStatus);
-router.delete("/:id", isAdminOrMod, deleteComplaint);
+// Staff
+router.get('/all', isAdminOrMod, getAllComplaints);
+router.put('/:id/status', isAdminOrMod, updateComplaintStatus);
+router.delete('/:id', isAdminOrMod, deleteComplaint);
 
 export default router;

@@ -2,7 +2,6 @@ import api from "../constants/api";
 
 class ComplaintService {
   createComplaint(formData) {
-    // formData contains 'subject', 'description', and 'images' (files)
     return api.post("/complaints", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });

@@ -4,12 +4,11 @@ const authSlice = createSlice({
   name: "auth",
   initialState: {
     user: null,
-    type: null,    // 'user' or 'employee'
-    status: false, // Matches your AuthLayout.jsx check
+    type: null, 
+    status: false, 
   },
   reducers: {
     login: (state, action) => {
-      // action.payload should be { user: {...}, type: "..." }
       state.user = action.payload.user;
       state.type = action.payload.type;
       state.status = true;
@@ -21,7 +20,7 @@ const authSlice = createSlice({
     },
     updateUser: (state, action) => {
       state.user = { ...state.user, ...action.payload };
-    }
+    },
   },
 });
 

@@ -16,11 +16,9 @@ class AuthService {
   updateProfile(data) {
     return api.patch("/auth/update-profile", data);
   }
-  // NEW: Update Email Method
   updateEmail(data) {
     return api.patch("/auth/update-email", data);
   }
-  // NEW: Update Fast-Login ID Method
   updateUserID(data) {
     return api.patch("/auth/update-userid", data);
   }

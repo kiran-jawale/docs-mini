@@ -9,7 +9,6 @@ import { isAdminOrHR } from "../middlewares/role.middleware.js";
 
 const router = Router();
 
-// CRITICAL: isVerified must come first to populate req.user
 router.use(isVerified, isAdminOrHR);
 
 router.get("/users", getUserAnalytics);

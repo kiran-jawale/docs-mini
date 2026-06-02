@@ -1,7 +1,7 @@
 export const content = {
   navLinks: [
     { title: "Home", path: "/" },
-    { title: "Docs", path: "/docs" }, // Changed from Dashboard to Docs
+    { title: "Docs", path: "/docs" },
     { title: "About", path: "/about" },
     { title: "Contact", path: "/contact" },
   ],

@@ -1,7 +1,7 @@
-import { Complaint } from "../models/complaint.model.js";
-import { ApiError } from "../utils/ApiError.js";
-import { UX_ERRORS } from "../constants/uxErrors.js";
-import cloudinaryService from "./cloudinary.service.js";
+import { Complaint } from '../models/complaint.model.js';
+import { ApiError } from '../utils/ApiError.js';
+import { UX_ERRORS } from '../constants/uxErrors.js';
+import cloudinaryService from './cloudinary.service.js';
 
 class ComplaintService {
   async createComplaint(data, files, userId) {
@@ -9,9 +9,15 @@ class ComplaintService {
 
     if (files && files.length > 0) {
       for (const file of files) {
-        const cloudRes = await cloudinaryService.upload(file.path, "docsmini/complaints");
+        const cloudRes = await cloudinaryService.upload(
+          file.path,
+          'docsmini/complaints'
+        );
         if (cloudRes) {
-          cloudImages.push({ url: cloudRes.secure_url, publicId: cloudRes.public_id });
+          cloudImages.push({
+            url: cloudRes.secure_url,
+            publicId: cloudRes.public_id,
+          });
         }
       }
     }
@@ -31,8 +37,8 @@ class ComplaintService {
   async getAllComplaints(statusFilter) {
     const query = statusFilter ? { status: statusFilter } : {};
     return await Complaint.find(query)
-      .populate("raisedBy", "fullname email")
-      .populate("assignedTo", "fullname dept")
+      .populate('raisedBy', 'fullname email')
+      .populate('assignedTo', 'fullname dept')
       .sort({ createdAt: -1 });
   }
 
@@ -52,7 +58,7 @@ class ComplaintService {
     if (!complaint) throw new ApiError(404, UX_ERRORS.COMPLAINT.NOT_FOUND);
 
     for (const img of complaint.images) {
-      await cloudinaryService.delete(img.publicId, "image");
+      await cloudinaryService.delete(img.publicId, 'image');
     }
 
     await Complaint.findByIdAndDelete(id);

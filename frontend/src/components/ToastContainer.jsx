@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ToastContainer = ({ toasts, removeToast }) => {
   return (
@@ -12,17 +12,17 @@ const ToastContainer = ({ toasts, removeToast }) => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
             className={`pointer-events-auto px-6 py-4 rounded-2xl shadow-2xl text-white font-bold flex items-center justify-between gap-4 min-w-[300px] border-b-4 ${
-              toast.type === 'success' 
-                ? 'bg-green-600 border-green-800' 
-                : 'bg-red-600 border-red-800'
+              toast.type === "success"
+                ? "bg-green-600 border-green-800"
+                : "bg-red-600 border-red-800"
             }`}
           >
             <div className="flex items-center gap-3">
-              <span>{toast.type === 'success' ? '✅' : '⚠️'}</span>
+              <span>{toast.type === "success" ? "✅" : "⚠️"}</span>
               <span className="text-sm">{toast.message}</span>
             </div>
-            <button 
-              onClick={() => removeToast(toast.id)} 
+            <button
+              onClick={() => removeToast(toast.id)}
               className="text-white/60 hover:text-white text-xl leading-none"
             >
               &times;

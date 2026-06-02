@@ -1,7 +1,7 @@
-import { Transaction } from "../models/transaction.model.js";
-import { Employee } from "../models/employee.model.js";
-import { ApiError } from "../utils/ApiError.js";
-import { UX_ERRORS } from "../constants/uxErrors.js"; // USING NEW CONSTANTS
+import { Transaction } from '../models/transaction.model.js';
+import { Employee } from '../models/employee.model.js';
+import { ApiError } from '../utils/ApiError.js';
+import { UX_ERRORS } from '../constants/uxErrors.js'; // USING NEW CONSTANTS
 
 class FinanceService {
   /**
@@ -12,7 +12,7 @@ class FinanceService {
     const { amount, type, description, recipientEmployee, processedBy } = data;
 
     // Edge Case: If it's a Payroll transaction, verify the recipient exists
-    if (type === "Payroll") {
+    if (type === 'Payroll') {
       const employeeExists = await Employee.findById(recipientEmployee);
       if (!employeeExists) {
         throw new ApiError(404, UX_ERRORS.FINANCE.PAYROLL_REQ_EMP);
@@ -23,17 +23,17 @@ class FinanceService {
       amount,
       type,
       description,
-      recipientEmployee: type === "Payroll" ? recipientEmployee : undefined,
+      recipientEmployee: type === 'Payroll' ? recipientEmployee : undefined,
       processedBy,
     });
 
     if (!transaction) {
-      throw new ApiError(500, "Failed to record transaction in the database.");
+      throw new ApiError(500, 'Transaction recording failed.');
     }
 
     return await Transaction.findById(transaction._id)
-      .populate("processedBy", "fullname empCode")
-      .populate("recipientEmployee", "fullname empCode");
+      .populate('processedBy', 'fullname empCode')
+      .populate('recipientEmployee', 'fullname empCode');
   }
 
   /**
@@ -41,8 +41,8 @@ class FinanceService {
    */
   async getAllTransactions() {
     return await Transaction.find()
-      .populate("processedBy", "fullname empCode")
-      .populate("recipientEmployee", "fullname empCode")
+      .populate('processedBy', 'fullname empCode')
+      .populate('recipientEmployee', 'fullname empCode')
       .sort({ date: -1 });
   }
 
@@ -51,9 +51,9 @@ class FinanceService {
    * This ensures HR cannot see company income or general operational expenses.
    */
   async getPayrollTransactions() {
-    return await Transaction.find({ type: "Payroll" })
-      .populate("processedBy", "fullname empCode")
-      .populate("recipientEmployee", "fullname empCode")
+    return await Transaction.find({ type: 'Payroll' })
+      .populate('processedBy', 'fullname empCode')
+      .populate('recipientEmployee', 'fullname empCode')
       .sort({ date: -1 });
   }
 
@@ -63,8 +63,7 @@ class FinanceService {
   async deleteTransaction(id) {
     const transaction = await Transaction.findByIdAndDelete(id);
     if (!transaction) {
-      // Sync: using the standard UX error for not found
-      throw new ApiError(404, UX_ERRORS.CRUD.NOT_FOUND); 
+      throw new ApiError(404, UX_ERRORS.CRUD.NOT_FOUND);
     }
     return transaction;
   }

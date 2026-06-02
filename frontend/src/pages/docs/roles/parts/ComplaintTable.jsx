@@ -1,6 +1,6 @@
-import React from 'react';
-import complaintService from '../../../../services/complaint.service';
-import { useDom } from '../../../../contexts/DomContext';
+import React from "react";
+import complaintService from "../../../../services/complaint.service";
+import { useDom } from "../../../../contexts/DomContext";
 
 const ComplaintTable = ({ complaints, refresh }) => {
   const { addToast } = useDom();
@@ -39,24 +39,41 @@ const ComplaintTable = ({ complaints, refresh }) => {
         </thead>
         <tbody className="divide-y dark:divide-zinc-800">
           {complaints.length === 0 ? (
-            <tr><td colSpan="4" className="p-10 text-center text-gray-500">No active complaints.</td></tr>
+            <tr>
+              <td colSpan="4" className="p-10 text-center text-gray-500">
+                No active complaints.
+              </td>
+            </tr>
           ) : (
-            complaints.map(c => (
-              <tr key={c._id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition">
+            complaints.map((c) => (
+              <tr
+                key={c._id}
+                className="hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition"
+              >
                 <td className="p-5">
-                  <p className="font-bold text-sm dark:text-white uppercase">{c.subject}</p>
-                  <p className="text-xs text-gray-500 line-clamp-1">{c.description}</p>
+                  <p className="font-bold text-sm dark:text-white uppercase">
+                    {c.subject}
+                  </p>
+                  <p className="text-xs text-gray-500 line-clamp-1">
+                    {c.description}
+                  </p>
                 </td>
                 <td className="p-5">
-                  <p className="text-sm font-medium dark:text-gray-300">{c.raisedBy?.fullname}</p>
-                  <p className="text-[10px] text-gray-500">{c.raisedBy?.email}</p>
+                  <p className="text-sm font-medium dark:text-gray-300">
+                    {c.raisedBy?.fullname}
+                  </p>
+                  <p className="text-[10px] text-gray-500">
+                    {c.raisedBy?.email}
+                  </p>
                 </td>
                 <td className="p-5">
-                  <select 
-                    value={c.status} 
+                  <select
+                    value={c.status}
                     onChange={(e) => handleStatusChange(c._id, e.target.value)}
                     className={`bg-transparent text-xs font-bold rounded p-1 border-none cursor-pointer ${
-                      c.status === 'resolved' ? 'text-green-500' : 'text-orange-500'
+                      c.status === "resolved"
+                        ? "text-green-500"
+                        : "text-orange-500"
                     }`}
                   >
                     <option value="pending">Pending</option>
@@ -65,7 +82,12 @@ const ComplaintTable = ({ complaints, refresh }) => {
                   </select>
                 </td>
                 <td className="p-5 text-right">
-                  <button onClick={() => handleDelete(c._id)} className="text-xs font-bold text-red-500 hover:underline">Delete</button>
+                  <button
+                    onClick={() => handleDelete(c._id)}
+                    className="text-xs font-bold text-red-500 hover:underline"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))

@@ -6,10 +6,13 @@ import cloudinaryService from './cloudinary.service.js';
 
 class DocumentService {
   async uploadDocument(data, file, user) {
-    const cloudRes = await cloudinaryService.upload(file.path, 'docsmini/documents');
+    const cloudRes = await cloudinaryService.upload(
+      file.path,
+      'docsmini/documents'
+    );
     if (!cloudRes) {
       console.error(`[SYSTEM] ${SYSTEM_ERRORS.CLOUD_UPLOAD_ERR}`);
-      throw new ApiError(500, UX_ERRORS.CRUD.UPLOAD_FAIL);
+      throw new ApiError(500, UX_ERRORS.FILE.INVALID_TYPE);
     }
 
     let isPublic = data.isPublic === 'true' || data.isPublic === true;
@@ -44,8 +47,7 @@ class DocumentService {
       .populate('owner', 'fullname email')
       .sort({ createdAt: -1 });
   }
-
-  // UPDATED: Allow visibility change in general update (Owner only)
+  
   async updateDocument(id, user, updateData) {
     const document = await Document.findById(id);
     if (!document) throw new ApiError(404, UX_ERRORS.FILE.NOT_FOUND);
@@ -56,8 +58,7 @@ class DocumentService {
 
     document.title = updateData.title || document.title;
     document.description = updateData.description || document.description;
-    
-    // Allow owner to toggle visibility via Edit Form
+
     if (updateData.isPublic !== undefined) {
       document.isPublic = updateData.isPublic;
     }
@@ -66,7 +67,7 @@ class DocumentService {
     return document;
   }
 
-  // NEW: Dedicated visibility toggle for Owner OR Staff (Admin/Mod)
+  
   async toggleVisibility(id, user) {
     const document = await Document.findById(id);
     if (!document) throw new ApiError(404, UX_ERRORS.FILE.NOT_FOUND);
@@ -94,7 +95,9 @@ class DocumentService {
       throw new ApiError(403, UX_ERRORS.AUTH.FORBIDDEN);
     }
 
-    const resourceType = document.fileType.startsWith('image/') ? 'image' : 'raw';
+    const resourceType = document.fileType.startsWith('image/')
+      ? 'image'
+      : 'raw';
     await cloudinaryService.delete(document.cloudPublicId, resourceType);
     await Document.findByIdAndDelete(id);
   }

@@ -1,5 +1,5 @@
-import { ApiError } from "./ApiError.js";
-import { ERRORS } from "../constants.js";
+import { ApiError } from './ApiError.js';
+import { ERRORS } from '../constants.js';
 
 class ValidationUtil {
   isValidEmail(email) {
@@ -11,8 +11,10 @@ class ValidationUtil {
   }
 
   validateRegistrationData(data) {
-    if (!this.isValidEmail(data.email)) throw new ApiError(400, ERRORS.VALIDATION.EMAIL);
-    if (!this.isStrongPassword(data.password)) throw new ApiError(400, ERRORS.VALIDATION.PASSWORD);
+    if (!this.isValidEmail(data.email))
+      throw new ApiError(400, ERRORS.VALIDATION.EMAIL);
+    if (!this.isStrongPassword(data.password))
+      throw new ApiError(400, ERRORS.VALIDATION.PASSWORD);
   }
 }
 export default new ValidationUtil();

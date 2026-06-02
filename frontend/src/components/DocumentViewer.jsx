@@ -8,33 +8,32 @@ const DocumentViewer = ({ document }) => {
   const fileType = document?.fileType || "";
 
   const isPreviewable = [
-    'application/pdf',
-    'text/plain',
-    'image/jpeg',
-    'image/png',
-    'image/jpg',
-    'image/gif'
+    "application/pdf",
+    "text/plain",
+    "image/jpeg",
+    "image/png",
+    "image/jpg",
+    "image/gif",
   ].includes(fileType);
 
   const handleDownload = () => {
     if (document?._id) {
-      window.open(documentService.getDownloadUrl(document._id), '_blank');
+      window.open(documentService.getDownloadUrl(document._id), "_blank");
     }
   };
 
   return (
     <div className="h-[75vh] w-full flex flex-col bg-zinc-100 dark:bg-zinc-900 rounded-lg overflow-hidden relative">
-      
       <div className="flex-none p-4 bg-white dark:bg-zinc-800 border-b border-gray-200 dark:border-zinc-700 flex justify-between items-center">
         <div>
           <h3 className="font-bold text-gray-800 dark:text-white truncate max-w-md">
             {document?.title || "Untitled Document"}
           </h3>
           <p className="text-xs text-gray-500 uppercase">
-            {fileType ? fileType.split('/')[1] : 'Document'}
+            {fileType ? fileType.split("/")[1] : "Document"}
           </p>
         </div>
-        <button 
+        <button
           onClick={handleDownload}
           disabled={!document?._id}
           className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-sm font-semibold rounded shadow transition"
@@ -45,8 +44,8 @@ const DocumentViewer = ({ document }) => {
 
       <div className="flex-grow relative">
         {isPreviewable && docUrl ? (
-          <iframe 
-            src={docUrl} 
+          <iframe
+            src={docUrl}
             title={document?.title || "Document Viewer"}
             className="w-full h-full border-0 bg-white"
           />
@@ -57,10 +56,11 @@ const DocumentViewer = ({ document }) => {
               Preview Not Available
             </h2>
             <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
-              This file format requires a desktop application or cloud service to render. 
-              Please download the file to view its contents securely on your local machine.
+              This file format requires a desktop application or cloud service
+              to render. Please download the file to view its contents securely
+              on your local machine.
             </p>
-            <button 
+            <button
               onClick={handleDownload}
               disabled={!document?._id}
               className="px-6 py-3 border-2 border-green-600 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg font-bold transition disabled:opacity-50"
