@@ -2,7 +2,7 @@ import axios from "axios";
 import { getErrorMessage } from "./errors";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v3',
   withCredentials: true,
 });
 
@@ -11,7 +11,6 @@ api.interceptors.response.use(
   (error) => {
     const finalMessage = getErrorMessage(error);
 
-    // Extract raw backend message for silence filtering
     const rawMessage = error.response?.data?.message;
 
     // SILENCE FILTER: Avoid showing toasts for background session checks

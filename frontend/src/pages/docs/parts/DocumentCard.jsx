@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion"; // <-- Import useAnimation
 import { useDom } from "../../../contexts/DomContext";
 import { useSelector } from "react-redux";
 import documentService from "../../../services/document.service";
@@ -9,39 +9,25 @@ const DocumentCard = ({ data, reference }) => {
 
   const fileTypeColors = {
     "application/pdf": "bg-red-600",
-
     "application/msword": "bg-blue-600",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
       "bg-blue-600",
-
     "application/json": "bg-yellow-500 text-yellow-900",
-
-  
     "application/vnd.ms-powerpoint": "bg-orange-600",
     "application/vnd.openxmlformats-officedocument.presentationml.presentation":
       "bg-orange-600",
-
-  
     "application/vnd.ms-excel": "bg-green-600",
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
       "bg-green-600",
-  
     "text/plain": "bg-zinc-700",
-
-
     "image/jpeg": "bg-sky-500",
     "image/png": "bg-sky-500",
     "image/jpg": "bg-sky-500",
     "image/gif": "bg-sky-500",
-
-  
     default: "bg-purple-600",
   };
 
-  // const colorClass = fileTypeColors[data.fileType] || fileTypeColors['default'];
-
   const { user } = useSelector((state) => state.auth);
-
   const isOwner = user?._id === (data.owner?._id || data.owner);
   const isStaff = ["admin", "mod"].includes(user?.role);
   const colorClass = fileTypeColors[data.fileType] || "bg-gray-600";
@@ -51,10 +37,49 @@ const DocumentCard = ({ data, reference }) => {
     window.open(url, "_blank");
   };
 
+
+  const controls = useAnimation();
+
+
+  const shouldSnapBack = true;
+  const limitDragDistance = true;
+  const maxDragDistance = 450;
+  
+  //limiting the movable area
+  const currentConstraints = limitDragDistance
+    ? {
+        top: -maxDragDistance,
+        left: -maxDragDistance,
+        right: maxDragDistance,
+        bottom: maxDragDistance,
+      }
+    : reference;
+
+  //when selected, then restart
+  const handleDragStart = () => {
+    controls.stop();
+  };
+  const handleDragEnd = () => {
+    if (shouldSnapBack) {
+      controls.start({
+        x: 0,
+        y: 0,
+        transition: {
+          type: "spring",
+          stiffness: 1,
+          damping: 5,
+        },
+      });
+    }
+  };
+
   return (
     <motion.div
       drag
-      dragConstraints={reference}
+      dragConstraints={currentConstraints}
+      animate={controls}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       whileDrag={{ scale: 1.05 }}
       className="relative flex-shrink-0 w-60 h-72 rounded-[40px] bg-zinc-900/95 text-white px-8 py-10 overflow-hidden shadow-xl border border-zinc-700 cursor-grab active:cursor-grabbing"
     >
@@ -89,7 +114,7 @@ const DocumentCard = ({ data, reference }) => {
             >
               👁️
             </button>
- 
+
             {isOwner && (
               <button
                 onClick={(e) => {
@@ -101,7 +126,7 @@ const DocumentCard = ({ data, reference }) => {
                 ✏️
               </button>
             )}
- 
+
             {(isOwner || isStaff) && (
               <button
                 onClick={(e) => {

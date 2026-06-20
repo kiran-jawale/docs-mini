@@ -24,7 +24,7 @@ const getMimeType = (ext) => {
   return mimes[ext] || 'application/octet-stream';
 };
 
-const password = 'pass1234';
+const password = '12345678';
 const sourceDir = path.join(process.cwd(), 'public', 'seed');
 const destDir = path.join(process.cwd(), 'public', 'uploads');
 
@@ -114,7 +114,7 @@ export const cleanAllSeed = asyncHandler(async (req, res) => {
         users: 5,
         docs: docsCreated,
         admin: 'admin@docs.com',
-        password: 'pass1234',
+        password: password,
       },
       'System Cleaned & Seeded with Default Users'
     )
