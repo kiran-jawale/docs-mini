@@ -52,8 +52,7 @@ export const morganStream = {
             }
             
             if (!data["API_Requests"]) data["API_Requests"] = [];
-            
-            // Cap at 50 to prevent unbounded file growth
+             
             if (data["API_Requests"].length >= 50) {
                 data["API_Requests"].shift();
             }
